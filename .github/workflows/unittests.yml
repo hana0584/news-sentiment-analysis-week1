@@ -1,0 +1,30 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main, task-*, feature-* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install TA-Lib
+      run: |
+        pip install TA_Lib‑0.4.28‑cp311‑cp311‑win_amd64.whl
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        python -m textblob.download_corpora
+    - name: Lint with black
+      run: |
+        black --check src/ notebooks/
+    - name: Test with pytest
+      run: |
+        pytest tests/
